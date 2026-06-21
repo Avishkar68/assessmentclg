@@ -2,7 +2,9 @@ import axios from 'axios';
 import showToast from '../utils/toast';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  // baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://assessmentclg.onrender.com/api',
+
   headers: {
     'Content-Type': 'application/json',
   },
@@ -30,10 +32,10 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      
+
       // Dispatch a custom logout event to notify context without page reload
       window.dispatchEvent(new CustomEvent('auth-logout'));
-      
+
       // If we are not already on the login page, redirect
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
