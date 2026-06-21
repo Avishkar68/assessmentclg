@@ -2,8 +2,8 @@ import axios from 'axios';
 import showToast from '../utils/toast';
 
 const api = axios.create({
-  // baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
-  baseURL: import.meta.env.VITE_API_URL || 'https://assessmentclg.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  // baseURL: import.meta.env.VITE_API_URL || 'https://assessmentclg.onrender.com/api',
 
   headers: {
     'Content-Type': 'application/json',
