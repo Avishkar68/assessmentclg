@@ -1,0 +1,2448 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Assessment & Exam Platform API Documentation",
+    "description": "Complete API definitions for the online assessment platform, supporting role-based user authentication, bulk question uploads, auto-generated exams, student evaluation violations tracking, and analytics dashboards.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5001/api",
+      "description": "Development API Server"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User registration, login, and profile lookup APIs"
+    },
+    {
+      "name": "Questions",
+      "description": "CRUD operations, spreadsheet bulk uploads, and document parsing templates"
+    },
+    {
+      "name": "Exams",
+      "description": "Create exams, query publish structures, auto-generation, and blueprints scheduling"
+    },
+    {
+      "name": "Submissions",
+      "description": "Start exams, record questions, update security violations, and auto/manual evaluations"
+    },
+    {
+      "name": "Results",
+      "description": "Query grade cards, percentages, rankings, and exam feedback reviews"
+    },
+    {
+      "name": "Analytics",
+      "description": "Platform activity metrics, topic strengths, and scoring breakdowns"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Register a new User",
+        "description": "Registers a new Admin, Teacher, or Student. User email must be unique, and passwords must be at least 6 characters.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "password",
+                  "role"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Jane Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "jane@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "password123"
+                  },
+                  "role": {
+                    "type": "string",
+                    "enum": [
+                      "admin",
+                      "teacher",
+                      "student"
+                    ],
+                    "example": "student"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User registered successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "token": {
+                              "type": "string",
+                              "example": "eyJhbGciOiJIUzI1NiIsIn..."
+                            },
+                            "user": {
+                              "$ref": "#/components/schemas/UserResponse"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed or duplicate email address",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Authenticate User",
+        "description": "Verifies login credentials and returns a Bearer JWT access token.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "email",
+                  "password"
+                ],
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "jane@example.com"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "password123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "token": {
+                              "type": "string",
+                              "example": "eyJhbGciOiJIUzI1NiIsIn..."
+                            },
+                            "user": {
+                              "$ref": "#/components/schemas/UserResponse"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Get Profile",
+        "description": "Fetches current authenticated user data using Bearer token authorization.",
+        "responses": {
+          "200": {
+            "description": "Profile data retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "user": {
+                              "$ref": "#/components/schemas/UserResponse"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized access token missing/invalid",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions": {
+      "post": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Create Question",
+        "description": "Allows Admins and Teachers to create questions. MCQ questions require non-empty `options` lists and matching `correctAnswer` values.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Question successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/QuestionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation checks failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access forbidden for Student role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Get Paginated Questions",
+        "description": "Retrieves questions with pagination support, fuzzy keyword search, and exact matching filters.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number index",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Documents count cap per page",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Fuzzy text search query matching questionText",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "subject",
+            "in": "query",
+            "description": "Filter by exact subject name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "chapter",
+            "in": "query",
+            "description": "Filter by exact chapter name",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "difficulty",
+            "in": "query",
+            "description": "Filter by exact difficulty rating",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Easy",
+                "Medium",
+                "Hard"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questions retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer",
+                              "example": 25
+                            },
+                            "page": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "pages": {
+                              "type": "integer",
+                              "example": 3
+                            },
+                            "results": {
+                              "type": "array",
+                              "items": {
+                                "$ref": "#/components/schemas/QuestionResponse"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Target Question ObjectID",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Get Question by ID",
+        "description": "Retrieves a single question details.",
+        "responses": {
+          "200": {
+            "description": "Question successfully fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/QuestionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Update Question",
+        "description": "Updates an existing question record. Enforces role security checking on modifications.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateQuestionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Question updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/QuestionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input formatting",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Delete Question",
+        "description": "Removes question from collection.",
+        "responses": {
+          "200": {
+            "description": "Question deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Question deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Question not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions/upload": {
+      "post": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Bulk Question Upload",
+        "description": "Enables bulk importing of multiple questions in Excel or CSV format.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Excel (.xlsx) or CSV file containing question sheets"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Questions parsed and imported successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/QuestionResponse"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "File parser error or headers parsing mismatch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions/template/excel": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "Excel Template Download",
+        "description": "Downloads the pre-formatted `.xlsx` bulk upload template containing correct column headers and sample data rows.",
+        "responses": {
+          "200": {
+            "description": "Spreadsheet document successfully compiled",
+            "headers": {
+              "Content-Disposition": {
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename=\"questions_template.xlsx\""
+                }
+              }
+            },
+            "content": {
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/questions/template/csv": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "CSV Template Download",
+        "description": "Downloads the pre-formatted `.csv` bulk upload template.",
+        "responses": {
+          "200": {
+            "description": "Comma-separated text template",
+            "headers": {
+              "Content-Disposition": {
+                "schema": {
+                  "type": "string",
+                  "example": "attachment; filename=\"questions_template.csv\""
+                }
+              }
+            },
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exams": {
+      "post": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Create Exam",
+        "description": "Creates a new exam in draft status. EndTime must fall chronologically after StartTime.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExamBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Exam created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExamResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input layout values",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Get Exams List",
+        "description": "Retrieves Exams list. Admins see all exams; Teachers see exams they created; Students see only published exams.",
+        "responses": {
+          "200": {
+            "description": "Exams successfully fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ExamResponse"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exams/generate": {
+      "post": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Smart Exam Generation",
+        "description": "Automatically selects a specified amount of easy, medium, and hard questions matching the subject parameter and generates a draft Exam structure.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateExamBody"
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "easyCount",
+                      "mediumCount",
+                      "hardCount"
+                    ],
+                    "properties": {
+                      "easyCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "example": 2
+                      },
+                      "mediumCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "example": 2
+                      },
+                      "hardCount": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "example": 1
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Exam generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExamResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Insufficient questions inside the selected category or bad body inputs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exams/blueprint-generate": {
+      "post": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Blueprint Exam Generation",
+        "description": "Generates a draft exam automatically using specific percentage weights mapping distributions across chapters and difficulties.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateExamBody"
+                  },
+                  {
+                    "type": "object",
+                    "required": [
+                      "totalQuestionsCount",
+                      "chapterWeights",
+                      "difficultyWeights"
+                    ],
+                    "properties": {
+                      "totalQuestionsCount": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 5
+                      },
+                      "chapterWeights": {
+                        "type": "object",
+                        "description": "Object mapping chapter names to weight percentages (must sum to 100)",
+                        "additionalProperties": {
+                          "type": "number"
+                        },
+                        "example": {
+                          "React Hooks": 40,
+                          "Express Routing": 60
+                        }
+                      },
+                      "difficultyWeights": {
+                        "type": "object",
+                        "description": "Object mapping difficulty ratings to weight percentages (must sum to 100)",
+                        "properties": {
+                          "Easy": {
+                            "type": "number"
+                          },
+                          "Medium": {
+                            "type": "number"
+                          },
+                          "Hard": {
+                            "type": "number"
+                          }
+                        },
+                        "additionalProperties": false,
+                        "example": {
+                          "Easy": 40,
+                          "Medium": 40,
+                          "Hard": 20
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Exam successfully generated via blueprint distribution logic",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExamResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Incorrect weight sums, missing questions in target chapter buckets, or validation failures",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exams/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "description": "Target Exam ObjectID",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        }
+      ],
+      "get": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Get Exam by ID",
+        "description": "Retrieves the core properties and question bindings for a single exam.",
+        "responses": {
+          "200": {
+            "description": "Exam data fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExamResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Exam not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Update Exam Details",
+        "description": "Updates details for an existing exam structure.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateExamBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Exam details updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExamResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Exam not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Delete Exam",
+        "description": "Removes exam from repository.",
+        "responses": {
+          "200": {
+            "description": "Exam deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Exam deleted successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Exam not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/exams/{id}/publish": {
+      "patch": {
+        "tags": [
+          "Exams"
+        ],
+        "summary": "Publish Draft Exam",
+        "description": "Transitions an Exam from status `'draft'` to `'published'`. The exam must have at least 1 question bound to it to allow publishing.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Target Exam ObjectID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exam successfully transitioned to published",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ExamResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Attempting to publish an empty exam or an exam already published/closed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submissions/start": {
+      "post": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Start Exam Attempt",
+        "description": "Starts or resumes an exam attempt for the authenticated Student. Rejects started submissions if the current time falls outside the Exam's scheduled duration window.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "examId"
+                ],
+                "properties": {
+                  "examId": {
+                    "type": "string",
+                    "example": "651a2b3c4d5e6f7a8b9c0d1e"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Existing attempt resumed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SubmissionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "New exam attempt initialized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SubmissionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Target exam is not published or the scheduled timeframe has passed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submissions/pending": {
+      "get": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Get Pending Submissions Queue",
+        "description": "Retrieves submissions containing Short Answer responses awaiting teacher evaluations. Teachers see only submissions relating to exams they created; Admins query globally.",
+        "responses": {
+          "200": {
+            "description": "List of pending evaluations fetched",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/SubmissionResponse"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submissions/{id}/save": {
+      "post": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Save Question Response",
+        "description": "Saves or updates a student's answer text for a specific question. Allowed only for the student owner while the attempt state is `'started'`.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Target Submission ObjectID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "questionId",
+                  "answerText"
+                ],
+                "properties": {
+                  "questionId": {
+                    "type": "string",
+                    "example": "651a2b3c4d5e6f7a8b9c0d2f"
+                  },
+                  "answerText": {
+                    "type": "string",
+                    "example": "Paris"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Answer saved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SubmissionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Target question does not exist in exam, submission is finalized, or scheduled window is closed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submissions/{id}/submit": {
+      "post": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Finalize and Grade Exam Attempt",
+        "description": "Finalizes the exam submission and scores MCQ questions immediately. Short Answers are left in `'pending'` evaluation status. Recalculates total score and spawns Result record if no short answers are present.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Target Submission ObjectID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Exam submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SubmissionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Submission already finalized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submissions/{id}/evaluate": {
+      "put": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Manual Teacher Grading",
+        "description": "Enables Teachers and Admins to award marks and write feedback notes for Short Answer questions. Once all answers are graded, submission transitions to `'graded'` status and compiles the student's Result record.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Target Submission ObjectID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "evaluations"
+                ],
+                "properties": {
+                  "evaluations": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "questionId",
+                        "marksObtained"
+                      ],
+                      "properties": {
+                        "questionId": {
+                          "type": "string",
+                          "example": "651a2b3c4d5e6f7a8b9c0d2f"
+                        },
+                        "marksObtained": {
+                          "type": "number",
+                          "example": 5
+                        },
+                        "feedback": {
+                          "type": "string",
+                          "example": "Well reasoned and detailed answer structure."
+                        }
+                      }
+                    }
+                  },
+                  "overallFeedback": {
+                    "type": "string",
+                    "example": "Great overall performance on the coding questions."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Manual grading finalized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SubmissionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Marks exceed the maximum threshold for the question, or invalid submission status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submissions/{id}/violations": {
+      "patch": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Update Security Violations Log",
+        "description": "Updates browser focus tracking metrics (tab switches, copy-paste block limits, fullscreen exit actions) during an active assessment attempt.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Target Submission ObjectID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tabSwitchCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 3
+                  },
+                  "fullscreenExitCount": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 1
+                  },
+                  "copyPasteAttempts": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "example": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Violations updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SubmissionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Attempting to update violations on a finalized/graded exam attempt",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/submissions/{id}": {
+      "get": {
+        "tags": [
+          "Submissions"
+        ],
+        "summary": "Get Submission by ID",
+        "description": "Retrieves attempt details and security metrics. Checked via RBAC (Students can only fetch their own; Teachers can query submissions to their created exams; Admins can fetch any).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Target Submission ObjectID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Attempt data fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/SubmissionResponse"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Attempting to query details for an exam attempt belonging to another student",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaseErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/results/student": {
+      "get": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Get Student Results",
+        "description": "Allows a student to retrieve their own final graded exams, containing percentages, grades, rank positions, and feedbacks.",
+        "responses": {
+          "200": {
+            "description": "Results records retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ResultResponse"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/results/teacher": {
+      "get": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Get Teacher Results",
+        "description": "Allows a Teacher to retrieve grading lists and candidate score details for exams they published.",
+        "responses": {
+          "200": {
+            "description": "Teacher results list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ResultResponse"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/results/admin": {
+      "get": {
+        "tags": [
+          "Results"
+        ],
+        "summary": "Get All Results",
+        "description": "Allows Admins to retrieve all final student graded results across the platform.",
+        "responses": {
+          "200": {
+            "description": "Complete results list retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ResultResponse"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/student": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get Student Dashboard Metrics",
+        "description": "Returns strong/weak subjects categorization and progress metrics lists sorted chronologically for the logged-in student.",
+        "responses": {
+          "200": {
+            "description": "Student analytics dashboard loaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "strongTopics": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": [
+                                "Web Development"
+                              ]
+                            },
+                            "weakTopics": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "example": []
+                            },
+                            "progressGraph": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "examTitle": {
+                                    "type": "string",
+                                    "example": "Maths Final"
+                                  },
+                                  "percentage": {
+                                    "type": "number",
+                                    "example": 92.5
+                                  },
+                                  "submitTime": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/teacher": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get Teacher Dashboard Metrics",
+        "description": "Compiles analytics insights for questions accuracy lists, difficulty category averages, and exam highest/lowest/average scores.",
+        "responses": {
+          "200": {
+            "description": "Teacher analytics loaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "questionAccuracy": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "questionId": {
+                                    "type": "string"
+                                  },
+                                  "questionText": {
+                                    "type": "string"
+                                  },
+                                  "accuracy": {
+                                    "type": "number",
+                                    "example": 80.5
+                                  }
+                                }
+                              }
+                            },
+                            "difficultyAnalysis": {
+                              "type": "object",
+                              "properties": {
+                                "Easy": {
+                                  "type": "number",
+                                  "example": 100
+                                },
+                                "Medium": {
+                                  "type": "number",
+                                  "example": 75
+                                },
+                                "Hard": {
+                                  "type": "number",
+                                  "example": 40
+                                }
+                              }
+                            },
+                            "examPerformance": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "examId": {
+                                    "type": "string"
+                                  },
+                                  "examTitle": {
+                                    "type": "string"
+                                  },
+                                  "averageScore": {
+                                    "type": "number",
+                                    "example": 8.5
+                                  },
+                                  "highestScore": {
+                                    "type": "number",
+                                    "example": 10
+                                  },
+                                  "lowestScore": {
+                                    "type": "number",
+                                    "example": 5
+                                  },
+                                  "participants": {
+                                    "type": "integer",
+                                    "example": 12
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/admin": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "summary": "Get Platform Metrics",
+        "description": "Calculates volume summaries of users (students/teachers), exams status distributions, and questions configurations globally.",
+        "responses": {
+          "200": {
+            "description": "Admin platform summary loaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/BaseSuccessResponse"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "totalStudents": {
+                              "type": "integer",
+                              "example": 50
+                            },
+                            "totalTeachers": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "totalExams": {
+                              "type": "integer",
+                              "example": 5
+                            },
+                            "totalQuestions": {
+                              "type": "integer",
+                              "example": 100
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "BaseSuccessResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Request completed successfully."
+          }
+        }
+      },
+      "BaseErrorResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "errors"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "example": "Validation failed."
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "example": "email"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Please provide a valid email address."
+                }
+              }
+            }
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "651a2b3c4d5e6f7a8b9c0d11"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "jane@example.com"
+          },
+          "role": {
+            "type": "string",
+            "example": "student"
+          }
+        }
+      },
+      "CreateQuestionBody": {
+        "type": "object",
+        "required": [
+          "type",
+          "questionText",
+          "difficulty",
+          "subject",
+          "chapter",
+          "marks"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "MCQ",
+              "Short Answer"
+            ],
+            "example": "MCQ"
+          },
+          "questionText": {
+            "type": "string",
+            "example": "Which React hook is used to maintain state within components?"
+          },
+          "questionImage": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/demo/image/upload/sample.jpg"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "Easy",
+              "Medium",
+              "Hard"
+            ],
+            "example": "Easy"
+          },
+          "subject": {
+            "type": "string",
+            "example": "Web Development"
+          },
+          "chapter": {
+            "type": "string",
+            "example": "React Hooks"
+          },
+          "marks": {
+            "type": "number",
+            "minimum": 1,
+            "example": 2
+          },
+          "options": {
+            "type": "array",
+            "description": "Required only for MCQ. Must contain at least 2 distinct values.",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "useState",
+              "useEffect",
+              "useContext",
+              "useReducer"
+            ]
+          },
+          "correctAnswer": {
+            "type": "string",
+            "description": "Required only for MCQ. Must exist in the options list.",
+            "example": "useState"
+          },
+          "expectedAnswer": {
+            "type": "string",
+            "description": "Required only for Short Answer questions.",
+            "example": "useState hook is used for functional component states."
+          }
+        }
+      },
+      "QuestionResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "questionText": {
+            "type": "string"
+          },
+          "questionImage": {
+            "type": "string"
+          },
+          "difficulty": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "chapter": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdBy": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateExamBody": {
+        "type": "object",
+        "required": [
+          "title",
+          "subject",
+          "duration",
+          "startTime",
+          "endTime",
+          "totalMarks"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Maths Final Assessment"
+          },
+          "description": {
+            "type": "string",
+            "example": "End of semester algebra exam."
+          },
+          "subject": {
+            "type": "string",
+            "example": "Mathematics"
+          },
+          "duration": {
+            "type": "integer",
+            "description": "Duration in minutes",
+            "example": 60
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-07-01T09:00:00.000Z"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-07-01T10:30:00.000Z"
+          },
+          "totalMarks": {
+            "type": "number",
+            "example": 50
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "651a2b3c4d5e6f7a8b9c0d2f"
+            ]
+          }
+        }
+      },
+      "ExamResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "duration": {
+            "type": "integer"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totalMarks": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published",
+              "closed"
+            ]
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdBy": {
+            "type": "string"
+          }
+        }
+      },
+      "SubmissionAnswerResponse": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answerText": {
+            "type": "string"
+          },
+          "isCorrect": {
+            "type": "boolean"
+          },
+          "marksObtained": {
+            "type": "number"
+          },
+          "evaluationStatus": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "correct",
+              "incorrect"
+            ]
+          },
+          "feedback": {
+            "type": "string"
+          }
+        }
+      },
+      "SubmissionResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "student": {
+            "type": "string"
+          },
+          "exam": {
+            "type": "string"
+          },
+          "startTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "submitTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "started",
+              "submitted",
+              "graded"
+            ]
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubmissionAnswerResponse"
+            }
+          },
+          "tabSwitchCount": {
+            "type": "integer"
+          },
+          "fullscreenExitCount": {
+            "type": "integer"
+          },
+          "copyPasteAttempts": {
+            "type": "integer"
+          },
+          "score": {
+            "type": "number"
+          },
+          "feedback": {
+            "type": "string"
+          }
+        }
+      },
+      "ResultResponse": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string"
+          },
+          "student": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              }
+            }
+          },
+          "exam": {
+            "type": "object",
+            "properties": {
+              "_id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "subject": {
+                "type": "string"
+              },
+              "totalMarks": {
+                "type": "number"
+              }
+            }
+          },
+          "submission": {
+            "type": "string"
+          },
+          "obtainedMarks": {
+            "type": "number"
+          },
+          "percentage": {
+            "type": "number"
+          },
+          "grade": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}
