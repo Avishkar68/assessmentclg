@@ -120,7 +120,7 @@ export const ExamAttempt = () => {
         }
       } catch (err) {
         console.error('Failed to load attempt details:', err);
-        setApiError(err || 'Failed to start the assessment. Ensure it is currently open.');
+        setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to start the assessment. Ensure it is currently open.');
       } finally {
         setLoading(false);
       }
@@ -325,7 +325,7 @@ export const ExamAttempt = () => {
       }
     } catch (err) {
       console.error('Submission failed:', err);
-      setApiError(err || 'Failed to submit exam attempt.');
+      setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to submit exam attempt.');
       setSubmitting(false);
     }
   };

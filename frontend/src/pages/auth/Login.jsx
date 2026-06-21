@@ -68,7 +68,7 @@ export const Login = () => {
       showToast.success('Logged in successfully!');
       // Redirection is handled by the useEffect above upon user state updates
     } catch (err) {
-      setApiError(err || 'Failed to authenticate. Please check your credentials.');
+      setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to authenticate. Please check your credentials.');
       setLoading(false);
     }
   };

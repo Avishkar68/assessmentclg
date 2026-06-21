@@ -73,6 +73,7 @@ export const ExamForm = () => {
             title: exam.title || '',
             description: exam.description || '',
             subject: exam.subject || '',
+            cohort: exam.cohort || '',
             duration: exam.duration || 60,
             startTime: toDatetimeLocal(exam.startTime),
             endTime: toDatetimeLocal(exam.endTime),
@@ -82,7 +83,7 @@ export const ExamForm = () => {
         }
       } catch (err) {
         console.error('Error loading exam:', err);
-        setApiError(err || 'Failed to retrieve exam details.');
+        setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to retrieve exam details.');
       } finally {
         setLoading(false);
       }
@@ -90,6 +91,27 @@ export const ExamForm = () => {
 
     fetchExam();
   }, [id, isEdit]);
+
+  // Fetch subjects and classes dropdown lists
+  useEffect(() => {
+    const fetchDropdowns = async () => {
+      try {
+        const [subjsRes, cohortsRes] = await Promise.all([
+          adminService.getSubjects(),
+          adminService.getClassRooms()
+        ]);
+        if (subjsRes && subjsRes.success) {
+          setSubjectsList(subjsRes.data || []);
+        }
+        if (cohortsRes && cohortsRes.success) {
+          setCohortsList(cohortsRes.data || []);
+        }
+      } catch (err) {
+        console.error('Error fetching dropdowns in ExamForm:', err);
+      }
+    };
+    fetchDropdowns();
+  }, []);
 
   // Fetch Questions when subject changes
   useEffect(() => {
@@ -175,6 +197,7 @@ export const ExamForm = () => {
     const errs = {};
     if (!formData.title.trim()) errs.title = 'Exam title is required.';
     if (!formData.subject) errs.subject = 'Please choose a subject.';
+    if (!formData.cohort) errs.cohort = 'Please choose a class/cohort target.';
     
     const dur = parseInt(formData.duration, 10);
     if (isNaN(dur) || dur < 1) {
@@ -219,6 +242,7 @@ export const ExamForm = () => {
         title: formData.title.trim(),
         description: formData.description.trim(),
         subject: formData.subject,
+        cohort: formData.cohort,
         duration: Number(formData.duration),
         startTime: new Date(formData.startTime).toISOString(),
         endTime: new Date(formData.endTime).toISOString(),
@@ -237,7 +261,7 @@ export const ExamForm = () => {
       navigate('/teacher/exams');
     } catch (err) {
       console.error('Error saving exam:', err);
-      setApiError(err || 'Failed to save the exam. Check form requirements.');
+      setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to save the exam. Check form requirements.');
     } finally {
       setSaving(false);
     }
@@ -352,9 +376,20 @@ export const ExamForm = () => {
                 disabled={isEdit}
                 options={[
                   { value: '', label: 'Select Subject' },
-                  'Web Development',
-                  'Data Science',
-                  'Cybersecurity',
+                  ...subjectsList.map(sub => sub.name)
+                ]}
+              />
+
+              <Select
+                label="Class/Cohort Target"
+                name="cohort"
+                value={formData.cohort}
+                onChange={handleInputChange}
+                error={formErrors.cohort}
+                disabled={isEdit}
+                options={[
+                  { value: '', label: 'Select Class/Cohort' },
+                  ...cohortsList.map(c => c.name)
                 ]}
               />
 

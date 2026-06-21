@@ -55,7 +55,7 @@ export const EvaluationForm = () => {
         }
       } catch (err) {
         console.error('Failed to load submission details:', err);
-        setApiError(err || 'Failed to retrieve exam attempt data.');
+        setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to retrieve exam attempt data.');
       } finally {
         setLoading(false);
       }
@@ -150,7 +150,7 @@ export const EvaluationForm = () => {
       }
     } catch (err) {
       console.error('Manual evaluation failed:', err);
-      setApiError(err || 'Failed to submit evaluation details.');
+      setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to submit evaluation details.');
     } finally {
       setSubmitting(false);
     }

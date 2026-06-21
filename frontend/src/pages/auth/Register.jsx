@@ -86,7 +86,7 @@ export const Register = () => {
       showToast.success('Account created successfully!');
       // Redirection is handled by the useEffect above upon user state updates
     } catch (err) {
-      setApiError(err || 'Failed to create account. Please try again.');
+      setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to create account. Please try again.');
       setLoading(false);
     }
   };

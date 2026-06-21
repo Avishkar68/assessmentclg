@@ -5,11 +5,16 @@ import {
   PlusCircle, Trash, ShieldAlert, Database, FileSpreadsheet
 } from 'lucide-react';
 import questionService from '../../services/questionService';
+import adminService from '../../services/adminService';
 import { Button, Card, Modal, Pagination, Input, Select, Textarea, CardSkeleton, Badge, EmptyState } from '../../components/common';
 import showToast from '../../utils/toast';
 
 export const QuestionBank = () => {
   const navigate = useNavigate();
+
+  // Dynamic Subjects List from backend
+  const [subjectsList, setSubjectsList] = useState([]);
+
   // Listing states
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,6 +83,21 @@ export const QuestionBank = () => {
   useEffect(() => {
     fetchQuestions();
   }, [fetchQuestions]);
+
+  // Fetch subjects from database
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const response = await adminService.getSubjects();
+        if (response && response.success) {
+          setSubjectsList(response.data || []);
+        }
+      } catch (err) {
+        console.error('Error fetching subjects in QuestionBank:', err);
+      }
+    };
+    fetchSubjects();
+  }, []);
 
   // Reset filter helpers
   const handleClearFilters = () => {
@@ -333,9 +353,7 @@ export const QuestionBank = () => {
               onChange={(e) => { setSubject(e.target.value); setPage(1); }}
               options={[
                 { value: '', label: 'All Subjects' },
-                'Web Development',
-                'Data Science',
-                'Cybersecurity',
+                ...subjectsList.map(sub => sub.name)
               ]}
               className="py-2"
             />
@@ -580,12 +598,15 @@ export const QuestionBank = () => {
 
           {/* Categorization Row */}
           <div className="grid grid-cols-2 gap-4">
-            <Input
+            <Select
               label="Subject"
               value={formData.subject}
               onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
-              placeholder="e.g. Web Development"
               error={formErrors.subject}
+              options={[
+                { value: '', label: 'Select Subject' },
+                ...subjectsList.map(sub => sub.name)
+              ]}
             />
             <Input
               label="Chapter"

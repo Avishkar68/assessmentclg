@@ -1,21 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, Clock, Calendar, BookOpen, AlertCircle, 
   CheckCircle2, Loader2, Sparkles, Check, FileText 
 } from 'lucide-react';
 import examService from '../../services/examService';
+import adminService from '../../services/adminService';
 import { Button, Card, Input, Select, Textarea, Badge } from '../../components/common';
 import showToast from '../../utils/toast';
 
 export const ExamGenerate = () => {
   const navigate = useNavigate();
 
+  // Subjects List state
+  const [subjectsList, setSubjectsList] = useState([]);
+  // Cohorts List state
+  const [cohortsList, setCohortsList] = useState([]);
+
   // Form Field states
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     subject: '',
+    cohort: '',
     duration: 60,
     startTime: '',
     endTime: '',
@@ -32,6 +39,26 @@ export const ExamGenerate = () => {
   const [apiError, setApiError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [generatedExam, setGeneratedExam] = useState(null);
+
+  useEffect(() => {
+    const fetchDropdowns = async () => {
+      try {
+        const [subjsRes, cohortsRes] = await Promise.all([
+          adminService.getSubjects(),
+          adminService.getClassRooms()
+        ]);
+        if (subjsRes && subjsRes.success) {
+          setSubjectsList(subjsRes.data || []);
+        }
+        if (cohortsRes && cohortsRes.success) {
+          setCohortsList(cohortsRes.data || []);
+        }
+      } catch (err) {
+        console.error('Error fetching dropdowns in ExamGenerate:', err);
+      }
+    };
+    fetchDropdowns();
+  }, []);
 
   // Input changes
   const handleInputChange = (e) => {
@@ -51,6 +78,7 @@ export const ExamGenerate = () => {
     const errs = {};
     if (!formData.title.trim()) errs.title = 'Exam title is required.';
     if (!formData.subject) errs.subject = 'Please choose a subject.';
+    if (!formData.cohort) errs.cohort = 'Please choose a class/cohort target.';
     
     const dur = parseInt(formData.duration, 10);
     if (isNaN(dur) || dur < 1) {
@@ -110,6 +138,7 @@ export const ExamGenerate = () => {
         title: formData.title.trim(),
         description: formData.description.trim(),
         subject: formData.subject,
+        cohort: formData.cohort,
         duration: Number(formData.duration),
         startTime: new Date(formData.startTime).toISOString(),
         endTime: new Date(formData.endTime).toISOString(),
@@ -129,7 +158,7 @@ export const ExamGenerate = () => {
       }
     } catch (err) {
       console.error('Generation failed:', err);
-      setApiError(err || 'Failed to generate exam. Verify there are enough questions of this subject/difficulty in the bank.');
+      setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to generate exam. Verify there are enough questions of this subject/difficulty in the bank.');
     } finally {
       setGenerating(false);
     }
@@ -153,7 +182,7 @@ export const ExamGenerate = () => {
       }
     } catch (err) {
       console.error('Publishing failed:', err);
-      setApiError(err || 'Failed to publish assessment.');
+      setApiError(err?.response?.data?.message || err?.message || (typeof err === 'string' ? err : '') || 'Failed to publish assessment.');
     } finally {
       setPublishing(false);
     }
@@ -232,9 +261,19 @@ export const ExamGenerate = () => {
                   error={formErrors.subject}
                   options={[
                     { value: '', label: 'Select Subject' },
-                    'Web Development',
-                    'Data Science',
-                    'Cybersecurity',
+                    ...subjectsList.map(sub => sub.name)
+                  ]}
+                />
+
+                <Select
+                  label="Class/Cohort Target"
+                  name="cohort"
+                  value={formData.cohort}
+                  onChange={handleInputChange}
+                  error={formErrors.cohort}
+                  options={[
+                    { value: '', label: 'Select Class/Cohort' },
+                    ...cohortsList.map(c => c.name)
                   ]}
                 />
 
