@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Shield, Brain, BarChart3, Clock, Compass, Target,
+import { 
+  Shield, Brain, BarChart3, Clock, Compass, Target, 
   Send, Sparkles, LogIn, UserPlus, ArrowRight, CheckCircle2, GraduationCap
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
@@ -44,31 +44,27 @@ export const Landing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-dark-950 text-slate-900 dark:text-slate-200 antialiased font-sans transition-colors duration-200 relative overflow-hidden">
-
-      {/* Background blobs for premium SaaS ambient glow */}
-      <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] rounded-full bg-primary-500/5 dark:bg-primary-500/10 blur-3xl pointer-events-none"></div>
-      <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] rounded-full bg-indigo-500/5 dark:bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+    <div className="min-h-screen bg-[#F8F8F8] text-[#111827] antialiased font-sans relative overflow-hidden">
 
       {/* 1. HEADER / NAVIGATION */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-900 bg-white/80 dark:bg-dark-950/80 backdrop-blur-md transition-colors duration-200">
+      <header className="sticky top-0 z-40 w-full border-b border-neutral-200 bg-white/85 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo Branding */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="p-1.5 bg-primary-500/10 border border-primary-500/20 rounded-lg">
-              <GraduationCap className="w-6 h-6 text-primary-500" />
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/')}>
+            <div className="p-1.5 bg-neutral-900 border border-neutral-850 rounded-lg text-white">
+              <GraduationCap className="w-5 h-5" />
             </div>
-            <span className="font-heading text-lg font-bold tracking-tight text-slate-800 dark:text-slate-100">
+            <span className="font-semibold text-lg tracking-tight text-neutral-900">
               ExamPortal
             </span>
           </div>
 
           {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600 dark:text-slate-400">
-            <a href="#features" className="hover:text-primary-500 transition-colors">Features</a>
-            <a href="#how-it-works" className="hover:text-primary-500 transition-colors">How It Works</a>
-            <a href="#benefits" className="hover:text-primary-500 transition-colors">Benefits</a>
-            <a href="#contact" className="hover:text-primary-500 transition-colors">Contact</a>
+          <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+            <a href="#features" className="hover:text-neutral-900 transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-neutral-900 transition-colors">How It Works</a>
+            <a href="#benefits" className="hover:text-neutral-900 transition-colors">Benefits</a>
+            <a href="#contact" className="hover:text-neutral-900 transition-colors">Contact</a>
           </nav>
 
           {/* Authentication actions */}
@@ -107,16 +103,16 @@ export const Landing = () => {
       </header>
 
       {/* 2. HERO SECTION */}
-      <section className="max-w-7xl mx-auto px-6 pt-16 pb-20 sm:pt-20 sm:pb-28 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+      <section className="max-w-7xl mx-auto px-6 pt-16 pb-20 sm:pt-24 sm:pb-28 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
         <div className="lg:col-span-6 space-y-6 text-center lg:text-left">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-500/10 border border-primary-500/20 text-primary-600 dark:text-primary-400 rounded-full text-xs font-bold uppercase tracking-wider animate-pulse">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-neutral-100 border border-neutral-200 text-neutral-800 rounded-full text-[10px] font-semibold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5 text-neutral-700" />
             Empowering Modern Education
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 font-heading leading-tight">
-            Assessments Made <span className="bg-gradient-to-r from-primary-500 to-indigo-500 bg-clip-text text-transparent">Intelligent</span>, Secure, and Effortless.
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-neutral-900 leading-tight">
+            Assessments Made Intelligent, Secure, and Effortless.
           </h1>
-          <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-relaxed max-w-xl mx-auto lg:mx-0">
+          <p className="text-sm sm:text-base text-neutral-500 leading-relaxed max-w-xl mx-auto lg:mx-0">
             A state-of-the-art SaaS platform designed for teachers, students, and administrators to generate smart exams, monitor attempts with proctoring safeguards, and analyze performance logs dynamically.
           </p>
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
@@ -135,7 +131,7 @@ export const Landing = () => {
               onClick={() => {
                 document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-8 border-slate-200 dark:border-slate-800"
+              className="px-8 border-neutral-200 text-neutral-700"
             >
               Learn More
             </Button>
@@ -144,41 +140,41 @@ export const Landing = () => {
 
         {/* Hero Interactive CSS Mockup */}
         <div className="lg:col-span-6 flex justify-center">
-          <div className="w-full max-w-lg glass-card rounded-2xl p-6 border border-slate-200 dark:border-slate-800/80 shadow-2xl relative animate-[scaleIn_0.35s_ease-out] hover:scale-[1.01] transition-transform duration-300">
+          <div className="w-full max-w-lg bg-white rounded-2xl p-6 border border-neutral-200 shadow-md relative hover:translate-y-[-2px] transition-transform duration-300">
             {/* Top Mockup Header Bar */}
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-900 pb-4 mb-5">
+            <div className="flex items-center justify-between border-b border-neutral-100 pb-4 mb-5">
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full bg-red-400"></span>
-                <span className="w-3 h-3 rounded-full bg-amber-400"></span>
-                <span className="w-3 h-3 rounded-full bg-emerald-400"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-neutral-200"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-neutral-200"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-neutral-200"></span>
               </div>
-              <span className="text-[10px] text-slate-400 font-mono tracking-wider">examportal-admin-console</span>
+              <span className="text-[10px] text-neutral-400 font-mono tracking-wider">examportal-admin-console</span>
             </div>
 
             {/* Mockup Dashboard content */}
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
-                <div className="p-3 bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/60 rounded-xl space-y-1 text-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Avg Score</span>
-                  <div className="text-sm font-extrabold text-slate-800 dark:text-slate-200">88.5%</div>
+                <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl space-y-1 text-center">
+                  <span className="text-[9px] font-semibold text-neutral-450 uppercase block">Avg Score</span>
+                  <div className="text-sm font-bold text-neutral-900">88.5%</div>
                 </div>
-                <div className="p-3 bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/60 rounded-xl space-y-1 text-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Passing %</span>
-                  <div className="text-sm font-extrabold text-emerald-600 dark:text-emerald-400">94.2%</div>
+                <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl space-y-1 text-center">
+                  <span className="text-[9px] font-semibold text-neutral-455 uppercase block">Passing %</span>
+                  <div className="text-sm font-bold text-emerald-600">94.2%</div>
                 </div>
-                <div className="p-3 bg-slate-100 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800/60 rounded-xl space-y-1 text-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase">Plagiarism</span>
-                  <div className="text-sm font-extrabold text-slate-800 dark:text-slate-200">0.02%</div>
+                <div className="p-3 bg-neutral-50 border border-neutral-200 rounded-xl space-y-1 text-center">
+                  <span className="text-[9px] font-semibold text-neutral-450 uppercase block">Plagiarism</span>
+                  <div className="text-sm font-bold text-neutral-900">0.02%</div>
                 </div>
               </div>
 
               {/* Chart Mockup */}
-              <div className="p-4 bg-slate-100 dark:bg-slate-900/20 border border-slate-200 dark:border-slate-800/40 rounded-xl space-y-2">
-                <span className="text-[9px] font-bold uppercase text-slate-400 tracking-wider">Registration Volume</span>
+              <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl space-y-2">
+                <span className="text-[9px] font-semibold uppercase text-neutral-450 tracking-wider block">Registration Volume</span>
                 <div className="h-28 flex items-end gap-3 pt-2">
                   {[25, 45, 30, 70, 55, 90].map((h, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                      <div style={{ height: `${h}%` }} className="w-full bg-gradient-to-t from-primary-600 to-indigo-500 rounded-t-md"></div>
+                      <div style={{ height: `${h}%` }} className="w-full bg-neutral-900 rounded-t-md hover:bg-neutral-800 transition-all duration-300"></div>
                     </div>
                   ))}
                 </div>
@@ -189,60 +185,66 @@ export const Landing = () => {
       </section>
 
       {/* 3. FEATURES SECTION */}
-      <section id="features" className="max-w-7xl mx-auto px-6 py-20 border-t border-slate-200 dark:border-slate-900/50">
+      <section id="features" className="max-w-7xl mx-auto px-6 py-20 border-t border-neutral-200">
         <div className="text-center max-w-xl mx-auto space-y-3 mb-16">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 font-heading">
+          <h2 className="text-3xl font-bold tracking-tight text-neutral-900">
             Packed with Powerful SaaS Utilities
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-normal">
+          <p className="text-xs sm:text-sm text-neutral-500 leading-normal">
             Every feature you need to author, run, evaluate and monitor assessments seamlessly.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Card 1 */}
-          <Card hoverable={true} className="p-6 space-y-4 hover:border-blue-500/20">
-            <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center text-blue-500">
-              <Brain className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">AI Exam Generator</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Auto-generate balanced assessments from difficulty parameters, blueprints, or chapter distributions instantly.
-            </p>
+          <Card hoverable={true} className="p-6 space-y-4">
+            <Card.Body className="space-y-4">
+              <div className="w-10 h-10 bg-neutral-100 border border-neutral-200 rounded-xl flex items-center justify-center text-neutral-800">
+                <Brain className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-semibold text-neutral-900">AI Exam Generator</h3>
+              <p className="text-xs text-neutral-500 leading-relaxed">
+                Auto-generate balanced assessments from difficulty parameters, blueprints, or chapter distributions instantly.
+              </p>
+            </Card.Body>
           </Card>
 
           {/* Card 2 */}
-          <Card hoverable={true} className="p-6 space-y-4 hover:border-purple-500/20">
-            <div className="w-10 h-10 bg-purple-500/10 border border-purple-500/20 rounded-xl flex items-center justify-center text-purple-500">
-              <Shield className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Proctoring Security</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Keep attempts secure with fullscreen locks, tab focus triggers, copy-paste locks, and instant anomaly loggers.
-            </p>
+          <Card hoverable={true} className="p-6 space-y-4">
+            <Card.Body className="space-y-4">
+              <div className="w-10 h-10 bg-neutral-100 border border-neutral-200 rounded-xl flex items-center justify-center text-neutral-800">
+                <Shield className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-semibold text-neutral-900">Proctoring Security</h3>
+              <p className="text-xs text-neutral-500 leading-relaxed">
+                Keep attempts secure with fullscreen locks, tab focus triggers, copy-paste locks, and instant anomaly loggers.
+              </p>
+            </Card.Body>
           </Card>
 
           {/* Card 3 */}
-          <Card hoverable={true} className="p-6 space-y-4 hover:border-emerald-500/20">
-            <div className="w-10 h-10 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-emerald-500">
-              <BarChart3 className="w-5 h-5" />
-            </div>
-            <h3 className="text-base font-bold text-slate-800 dark:text-slate-100">Audit Logs & Ledger</h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              Trace logins, logouts, question edits, and submissions with a comprehensive searchable ledger built for admins.
-            </p>
+          <Card hoverable={true} className="p-6 space-y-4">
+            <Card.Body className="space-y-4">
+              <div className="w-10 h-10 bg-neutral-100 border border-neutral-200 rounded-xl flex items-center justify-center text-neutral-800">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-semibold text-neutral-900">Audit Logs & Ledger</h3>
+              <p className="text-xs text-neutral-500 leading-relaxed">
+                Trace logins, logouts, question edits, and submissions with a comprehensive searchable ledger built for admins.
+              </p>
+            </Card.Body>
           </Card>
         </div>
       </section>
 
       {/* 4. HOW IT WORKS SECTION */}
-      <section id="how-it-works" className="bg-slate-100/40 dark:bg-dark-900/10 py-20 border-y border-slate-200 dark:border-slate-900/50">
+      <section id="how-it-works" className="bg-neutral-50 py-20 border-y border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto space-y-3 mb-16">
-            <h2 className="text-3xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 font-heading">
+            <h2 className="text-3xl font-bold tracking-tight text-neutral-900">
               Assessments in Three Easy Steps
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-normal">
+            <p className="text-xs sm:text-sm text-neutral-500 leading-normal">
               Our intuitive workflows ensure teachers and students get the best online assessment experience.
             </p>
           </div>
@@ -250,33 +252,33 @@ export const Landing = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
             {/* Step 1 */}
             <div className="flex flex-col items-center text-center space-y-4 relative z-10">
-              <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-extrabold text-lg shadow-lg shadow-primary-500/20">
+              <div className="w-12 h-12 bg-neutral-900 text-white rounded-full flex items-center justify-center font-bold text-lg border border-neutral-800 shadow-xs">
                 1
               </div>
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Author & Configure</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
+              <h3 className="text-sm font-semibold text-neutral-900">Author & Configure</h3>
+              <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">
                 Teachers draft exams manually or auto-generate them. Set configurations like shuffles, time bounds, and back nav limits.
               </p>
             </div>
 
             {/* Step 2 */}
             <div className="flex flex-col items-center text-center space-y-4 relative z-10">
-              <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-extrabold text-lg shadow-lg shadow-primary-500/20">
+              <div className="w-12 h-12 bg-neutral-900 text-white rounded-full flex items-center justify-center font-bold text-lg border border-neutral-800 shadow-xs">
                 2
               </div>
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Attempt Securely</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
+              <h3 className="text-sm font-semibold text-neutral-900">Attempt Securely</h3>
+              <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">
                 Students enter the testing engine. Fullscreen monitors and anti-cheating scripts ensure assessment integrity.
               </p>
             </div>
 
             {/* Step 3 */}
             <div className="flex flex-col items-center text-center space-y-4 relative z-10">
-              <div className="w-12 h-12 bg-primary-600 text-white rounded-full flex items-center justify-center font-extrabold text-lg shadow-lg shadow-primary-500/20">
+              <div className="w-12 h-12 bg-neutral-900 text-white rounded-full flex items-center justify-center font-bold text-lg border border-neutral-800 shadow-xs">
                 3
               </div>
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">Evaluate & Release</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-xs">
+              <h3 className="text-sm font-semibold text-neutral-900">Evaluate & Release</h3>
+              <p className="text-xs text-neutral-500 leading-relaxed max-w-xs">
                 Teachers grade subjective content and release reports. Grades and feedback remarks sync directly to student dashboards.
               </p>
             </div>
@@ -287,10 +289,10 @@ export const Landing = () => {
       {/* 5. BENEFITS SECTION */}
       <section id="benefits" className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center max-w-xl mx-auto space-y-3 mb-16">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100 font-heading">
+          <h2 className="text-3xl font-bold tracking-tight text-neutral-900">
             Empowering All Platform Stakeholders
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-normal">
+          <p className="text-xs sm:text-sm text-neutral-500 leading-normal">
             Custom-built views and benefits tailored for teachers, students, and system admins.
           </p>
         </div>
@@ -298,123 +300,126 @@ export const Landing = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Column Left: Visual Checklist */}
           <div className="space-y-6">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Why Academics Choose ExamPortal</h3>
+            <h3 className="text-lg font-semibold text-neutral-900">Why Academics Choose ExamPortal</h3>
             <div className="space-y-4">
               <div className="flex gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-350">Save Hours of Manual Authoring</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Generate complex question distributions in seconds with smart auto-selection.</p>
+                  <h4 className="text-xs font-semibold text-neutral-800">Save Hours of Manual Authoring</h4>
+                  <p className="text-xs text-neutral-500">Generate complex question distributions in seconds with smart auto-selection.</p>
                 </div>
               </div>
               <div className="flex gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-350">Mitigate Academic Malpractice</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Proctoring algorithms detect window blurring, screen changes, and copy-paste attempts.</p>
+                  <h4 className="text-xs font-semibold text-neutral-800">Mitigate Academic Malpractice</h4>
+                  <p className="text-xs text-neutral-500">Proctoring algorithms detect window blurring, screen changes, and copy-paste attempts.</p>
                 </div>
               </div>
               <div className="flex gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-bold text-slate-700 dark:text-slate-350">Transparent Result Dashboards</h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Export detailed reports as CSV/Excel files and release graded transcripts securely.</p>
+                  <h4 className="text-xs font-semibold text-neutral-800">Transparent Result Dashboards</h4>
+                  <p className="text-xs text-neutral-500">Export detailed reports as CSV/Excel files and release graded transcripts securely.</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Column Right: Details Card */}
-          <Card hoverable={false} className="p-6 sm:p-8 bg-gradient-to-br from-primary-650/5 to-indigo-650/5 border border-primary-500/10">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-primary-500 mb-4">Value Proposition</h3>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <div className="text-2xl font-extrabold text-slate-850 dark:text-slate-100">80%</div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">Grading Time Saved</div>
+          <Card className="p-6 sm:p-8 bg-neutral-50 border border-neutral-200">
+            <Card.Body className="space-y-4">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-4">Value Proposition</h3>
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-0.5">
+                  <div className="text-2xl font-bold text-neutral-900">80%</div>
+                  <div className="text-[10px] uppercase font-semibold text-neutral-400">Grading Time Saved</div>
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-2xl font-bold text-neutral-900">99.8%</div>
+                  <div className="text-[10px] uppercase font-semibold text-neutral-400">System Uptime SLA</div>
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-2xl font-bold text-neutral-900">10k+</div>
+                  <div className="text-[10px] uppercase font-semibold text-neutral-400">Exams Hosted</div>
+                </div>
+                <div className="space-y-0.5">
+                  <div className="text-2xl font-bold text-neutral-900">0%</div>
+                  <div className="text-[10px] uppercase font-semibold text-neutral-400">Plagiarism Violations</div>
+                </div>
               </div>
-              <div className="space-y-1">
-                <div className="text-2xl font-extrabold text-slate-850 dark:text-slate-100">99.8%</div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">System Uptime SLA</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-2xl font-extrabold text-slate-850 dark:text-slate-100">10k+</div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">Exams Hosted</div>
-              </div>
-              <div className="space-y-1">
-                <div className="text-2xl font-extrabold text-slate-850 dark:text-slate-100">0%</div>
-                <div className="text-[10px] uppercase font-bold text-slate-400">Plagiarism Violations</div>
-              </div>
-            </div>
+            </Card.Body>
           </Card>
         </div>
       </section>
 
       {/* 6. CONTACT SECTION */}
       <section id="contact" className="max-w-4xl mx-auto px-6 py-20">
-        <Card hoverable={false} className="p-8 sm:p-12 relative overflow-hidden">
-          {/* Subtle background glow inside Card */}
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary-500/5 dark:bg-primary-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
-            {/* Left side details */}
-            <div className="md:col-span-5 space-y-4 text-center md:text-left">
-              <h3 className="text-2xl font-extrabold text-slate-800 dark:text-slate-100 font-heading">
-                Ready to Upgrade?
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                Contact our support team to register your school, purchase institutional plan tiers, or request custom features.
-              </p>
-              <div className="text-xs text-slate-450 dark:text-slate-500">
-                Email: <strong>support@examportal.edu</strong><br />
-                Hours: <strong>9 AM - 6 PM EST</strong>
+        <Card className="p-8 sm:p-12 relative overflow-hidden">
+          <Card.Body className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center relative z-10">
+              {/* Left side details */}
+              <div className="md:col-span-5 space-y-4 text-center md:text-left">
+                <h3 className="text-2xl font-bold text-neutral-900">
+                  Ready to Upgrade?
+                </h3>
+                <p className="text-xs text-neutral-500 leading-relaxed">
+                  Contact our support team to register your school, purchase institutional plan tiers, or request custom features.
+                </p>
+                <div className="text-xs text-neutral-500 space-y-1">
+                  <p>Email: <span className="font-semibold text-neutral-900">support@examportal.edu</span></p>
+                  <p>Hours: <span className="font-semibold text-neutral-900">9 AM - 6 PM EST</span></p>
+                </div>
               </div>
-            </div>
 
-            {/* Right side contact form */}
-            <form onSubmit={handleContactSubmit} className="md:col-span-7 space-y-4">
-              <Input
-                label="Full Name"
-                value={contactName}
-                onChange={(e) => setContactName(e.target.value)}
-                placeholder="John Doe"
-              />
-              <Input
-                label="Email Address"
-                type="email"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                placeholder="john@example.com"
-              />
-              <Textarea
-                label="Your Message"
-                value={contactMessage}
-                onChange={(e) => setContactMessage(e.target.value)}
-                placeholder="Tell us about your organization and requirements..."
-                rows={4}
-              />
-              <Button
-                type="submit"
-                isLoading={submittingContact}
-                icon={Send}
-                className="w-full py-2.5"
-              >
-                Send Message
-              </Button>
-            </form>
-          </div>
+              {/* Right side contact form */}
+              <form onSubmit={handleContactSubmit} className="md:col-span-7 space-y-4">
+                <Input
+                  label="Full Name"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  placeholder="John Doe"
+                />
+                <Input
+                  label="Email Address"
+                  type="email"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  placeholder="john@example.com"
+                />
+                <Textarea
+                  label="Your Message"
+                  value={contactMessage}
+                  onChange={(e) => setContactMessage(e.target.value)}
+                  placeholder="Tell us about your organization and requirements..."
+                  rows={4}
+                />
+                <Button
+                  type="submit"
+                  isLoading={submittingContact}
+                  icon={Send}
+                  className="w-full py-2.5"
+                >
+                  Send Message
+                </Button>
+              </form>
+            </div>
+          </Card.Body>
         </Card>
       </section>
 
       {/* 7. FOOTER */}
-      <footer className="border-t border-slate-200 dark:border-slate-900 bg-white dark:bg-dark-950/20 py-10 transition-colors duration-200">
+      <footer className="border-t border-neutral-200 bg-white py-10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-primary-500" />
-            <span className="font-bold text-sm tracking-tight text-slate-800 dark:text-slate-200">
+            <div className="p-1.5 bg-neutral-900 border border-neutral-850 rounded-lg text-white">
+              <GraduationCap className="w-4 h-4" />
+            </div>
+            <span className="font-bold text-sm tracking-tight text-neutral-900">
               ExamPortal © 2026
             </span>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-neutral-400">
             Secure Assessment Delivery & AI Proctoring Infrastructure. All Rights Reserved.
           </p>
         </div>
