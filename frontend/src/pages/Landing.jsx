@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Shield, Brain, BarChart3, Clock, Compass, Target, 
+import {
+  Shield, Brain, BarChart3, Clock, Compass, Target,
   Send, Sparkles, LogIn, UserPlus, ArrowRight, CheckCircle2, GraduationCap
 } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
@@ -55,7 +55,7 @@ export const Landing = () => {
               <GraduationCap className="w-5 h-5" />
             </div>
             <span className="font-semibold text-lg tracking-tight text-neutral-900">
-              ExamPortal
+              FAVProct
             </span>
           </div>
 
@@ -416,7 +416,7 @@ export const Landing = () => {
               <GraduationCap className="w-4 h-4" />
             </div>
             <span className="font-bold text-sm tracking-tight text-neutral-900">
-              ExamPortal © 2026
+              FAVProct © 2026
             </span>
           </div>
           <p className="text-[11px] text-neutral-400">

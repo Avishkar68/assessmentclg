@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Award, Calendar, Clock, Printer, Download, BookOpen, 
-  AlertCircle, X, CheckCircle2, Loader2, BarChart 
+import {
+  Award, Calendar, Clock, Printer, Download, BookOpen,
+  AlertCircle, X, CheckCircle2, Loader2, BarChart
 } from 'lucide-react';
 import resultsService from '../../services/resultsService';
 import { Card, Button, Modal, Table } from '../../components/common';
@@ -12,7 +12,7 @@ export const StudentResults = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Selected result for detail card modal
   const [selectedResult, setSelectedResult] = useState(null);
 
@@ -62,7 +62,7 @@ export const StudentResults = () => {
   const handleDownload = (res) => {
     const ex = res.exam;
     const reportText = `================================================
-          EXAMPORTAL OFFICIAL ACADEMIC TRANSCRIPT
+          FAVPROCT OFFICIAL ACADEMIC TRANSCRIPT
 ================================================
 
 EXAM DETAILS:
@@ -86,7 +86,7 @@ ${res.submission?.feedback || 'No comments provided.'}
 
 ================================================
 Generated on: ${new Date().toLocaleString()}
-ExamPortal Verification Signature
+FAVProct Verification Signature
 ================================================`;
 
     const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
@@ -112,7 +112,8 @@ ExamPortal Verification Signature
   return (
     <div className="space-y-6 select-none">
       {/* Printable CSS inject */}
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @media print {
           body * {
             visibility: hidden;
@@ -155,7 +156,7 @@ ExamPortal Verification Signature
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        
+
         {/* Total Completed */}
         <Card hoverable={true} className="p-6 flex items-center justify-between group">
           <div className="space-y-2">
@@ -223,13 +224,12 @@ ExamPortal Verification Signature
               {res.obtainedMarks} / {res.exam?.totalMarks}
             </td>
             <td className="py-4 px-6 font-semibold">
-              <span className={`px-2 py-0.5 text-xs rounded border ${
-                res.percentage >= 80 
-                  ? 'text-emerald-600 bg-emerald-50 border-emerald-200' 
-                  : res.percentage >= 60 
+              <span className={`px-2 py-0.5 text-xs rounded border ${res.percentage >= 80
+                ? 'text-emerald-600 bg-emerald-50 border-emerald-200'
+                : res.percentage >= 60
                   ? 'text-neutral-900 bg-neutral-100 border-neutral-200'
                   : 'text-amber-600 bg-amber-50 border-amber-200'
-              }`}>
+                }`}>
                 {res.percentage}%
               </span>
             </td>
@@ -303,7 +303,7 @@ ExamPortal Verification Signature
                 <h2 className="text-xl font-bold uppercase tracking-widest text-neutral-900 font-heading">
                   Official Report Card
                 </h2>
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider">ExamPortal Assessment Transcript</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider">FAVProct Assessment Transcript</p>
               </div>
 
               <div className="border-t border-neutral-200 pt-4 text-xs space-y-3 max-w-sm mx-auto text-left text-slate-650">
